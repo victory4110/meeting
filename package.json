@@ -1,0 +1,21 @@
+{
+  "name": "meeting-qr",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "One permanent QR code that always points at the current meeting registration form.",
+  "scripts": {
+    "qr": "node make-qr.mjs",
+    "verify": "node verify-qr.mjs",
+    "test": "node test.mjs",
+    "serve": "node serve.mjs"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.1",
+    "jsqr": "^1.4.0",
+    "pngjs": "^7.0.0"
+  }
+}
