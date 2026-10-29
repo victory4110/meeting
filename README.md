@@ -4,11 +4,11 @@ One permanent QR code for meeting registration. Print it once. When the next
 meeting comes, you change **one line** and the same QR keeps working.
 
 ```
-   QR code  ──►  https://victory4110.github.io/meeting/  ──►  https://flames-of-fire.vercel.app
+   QR code  ──►  https://victory4110.github.io/meeting/  ──►  https://h2h-youth.vercel.app
                           (config.js holds the link)
 ```
 
-Live page: **https://flames-of-fire.vercel.app**
+Live page: **https://h2h-youth.vercel.app**
 
 ---
 
