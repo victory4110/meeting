@@ -4,7 +4,7 @@ One permanent QR code for meeting registration. Print it once. When the next
 meeting comes, you change **one line** and the same QR keeps working.
 
 ```
-   QR code  ──►  https://flames-of-fire.vercel.app  ──►  the current Google Form
+   QR code  ──►  https://victory4110.github.io/meeting/  ──►  https://flames-of-fire.vercel.app
                           (config.js holds the link)
 ```
 
@@ -55,7 +55,7 @@ When someone scans the QR code on the flyer or poster, they land on the **NYC'26
 
 ```bash
 npm install
-npm run qr -- https://flames-of-fire.vercel.app --name=registration-qr
+npm run qr -- https://victory4110.github.io/meeting/ --name=registration-qr
 npm test
 ```
 
