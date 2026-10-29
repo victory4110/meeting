@@ -8,7 +8,17 @@ import path from "node:path";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = here;
 const PORT = Number(process.env.PORT || 5173);
-const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".png": "image/png" };
+const types = {
+  ".html": "text/html",
+  ".js": "text/javascript",
+  ".css": "text/css",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
+  ".svg": "image/svg+xml",
+  ".pdf": "application/pdf"
+};
 
 createServer((req, res) => {
   const rel = req.url === "/" ? "index.html" : decodeURIComponent(req.url.split("?")[0].slice(1));

@@ -1,70 +1,886 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meeting Registration</title>
-<style>
-  :root { --ink:#111827; --muted:#6b7280; --brand:#2563eb; }
-  * { box-sizing:border-box; }
-  body {
-    margin:0; min-height:100vh; display:grid; place-items:center;
-    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    color:var(--ink); background:#f8fafc; padding:24px;
-  }
-  .card {
-    width:100%; max-width:420px; background:#fff; border:1px solid #e5e7eb;
-    border-radius:16px; padding:32px 28px; text-align:center;
-    box-shadow:0 10px 30px rgba(15,23,42,.06);
-  }
-  h1 { font-size:22px; margin:0 0 8px; letter-spacing:-.01em; }
-  p { margin:0 0 22px; color:var(--muted); font-size:15px; }
-  a.btn {
-    display:inline-block; background:var(--brand); color:#fff; text-decoration:none;
-    font-weight:600; padding:13px 26px; border-radius:10px;
-  }
-  a.btn:active { transform:translateY(1px); }
-  .spin {
-    width:22px; height:22px; margin:0 auto 18px; border-radius:50%;
-    border:3px solid #e5e7eb; border-top-color:var(--brand); animation:s .8s linear infinite;
-  }
-  @keyframes s { to { transform:rotate(360deg); } }
-  .url { margin-top:20px; font-size:12px; color:#9ca3af; word-break:break-all; }
-  @media print { .spin, .url { display:none; } body { background:#fff; } .card { box-shadow:none; } }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Meeting Registration</title>
+  <meta name="description" content="Official meeting registration and program pamphlet for NYC'26 FLAMES OF FIRE.">
+
+  <style>
+    :root {
+      /* Palette directly sampled from the FLAMES OF FIRE program flyer */
+      --fire-black: #0d0302;
+      --fire-charcoal: #190604;
+      --fire-deep-red: #7f1406;
+      --fire-crimson: #b91c1c;
+      --fire-scarlet: #dc2626;
+      --fire-orange: #ea580c;
+      --fire-flame: #ff6a00;
+      --fire-amber: #f97316;
+      --fire-gold: #fbbf24;
+      --fire-yellow: #fde047;
+      --fire-cream: #fff7ed;
+
+      --card-bg: rgba(22, 6, 4, 0.84);
+      --card-border: rgba(255, 107, 0, 0.28);
+      --card-border-hover: rgba(255, 170, 70, 0.65);
+      --ink-primary: #ffffff;
+      --ink-secondary: #fed7aa;
+      --ink-muted: #fdba74;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at 50% 18%, #991b1b 0%, #681205 32%, #260502 68%, #0d0201 100%);
+      color: var(--ink-primary);
+      padding: 24px 16px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Program Flyer Background Layer */
+    .flyer-backdrop {
+      position: fixed;
+      inset: -40px;
+      background-image: url('program-cover.jpg');
+      background-position: 92% center;
+      background-size: 200% cover;
+      background-repeat: no-repeat;
+      filter: blur(42px) brightness(0.72) saturate(2.4);
+      opacity: 0.88;
+      transform: scale(1.08);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Ambient Dynamic Ember Glows */
+    .glow-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(85px);
+      mix-blend-mode: screen;
+    }
+    .glow-fire-top {
+      top: -120px;
+      right: -80px;
+      width: 440px;
+      height: 440px;
+      background: radial-gradient(circle, rgba(255, 106, 0, 0.55) 0%, rgba(220, 38, 38, 0.3) 50%, transparent 70%);
+      animation: floatFlameA 8s ease-in-out infinite alternate;
+    }
+    .glow-fire-bottom {
+      bottom: -130px;
+      left: -90px;
+      width: 460px;
+      height: 460px;
+      background: radial-gradient(circle, rgba(234, 88, 12, 0.5) 0%, rgba(127, 20, 6, 0.35) 50%, transparent 70%);
+      animation: floatFlameB 10s ease-in-out infinite alternate;
+    }
+    .glow-fire-center {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(251, 191, 36, 0.16) 0%, transparent 70%);
+    }
+
+    @keyframes floatFlameA {
+      from { transform: translate(0, 0) scale(1); }
+      to { transform: translate(-30px, 40px) scale(1.18); }
+    }
+    @keyframes floatFlameB {
+      from { transform: translate(0, 0) scale(1); }
+      to { transform: translate(40px, -30px) scale(1.15); }
+    }
+
+    /* Main Container Card */
+    .hub {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 450px;
+      background: var(--card-bg);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 34px 24px 26px;
+      box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.88),
+                  0 0 40px -8px rgba(234, 88, 12, 0.28),
+                  inset 0 1px 0 rgba(255, 200, 150, 0.18);
+      text-align: center;
+      animation: hubEnter 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes hubEnter {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Organization & Tag Badges */
+    .badge-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .org-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #ffedd5;
+      background: rgba(127, 20, 6, 0.5);
+      border: 1px solid rgba(255, 107, 0, 0.3);
+      padding: 4px 11px;
+      border-radius: 999px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    }
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.6), rgba(234, 88, 12, 0.6));
+      border: 1px solid rgba(255, 190, 120, 0.45);
+      padding: 4px 11px;
+      border-radius: 999px;
+      box-shadow: 0 2px 10px rgba(220, 38, 38, 0.35);
+    }
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #fbbf24;
+      box-shadow: 0 0 10px #fbbf24, 0 0 4px #ff6a00;
+      animation: flamePulse 1.6s infinite;
+    }
+    @keyframes flamePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    /* Event Title */
+    h1 {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      background: linear-gradient(180deg, #ffffff 0%, #fff1c2 35%, #ff9500 70%, #d82b00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 16px rgba(255, 106, 0, 0.45));
+    }
+    .subtitle {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fed7aa;
+      letter-spacing: 0.02em;
+      margin-bottom: 14px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Event Info Chips */
+    .event-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      color: #ffedd5;
+      flex-wrap: wrap;
+    }
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(60, 12, 6, 0.6);
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 107, 0, 0.35);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    .meta-chip svg {
+      width: 14px;
+      height: 14px;
+      color: #fbbf24;
+      flex-shrink: 0;
+    }
+
+    p.note {
+      color: #fed7aa;
+      font-size: 13.5px;
+      line-height: 1.5;
+      margin-bottom: 22px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Action Buttons Container */
+    .action-group {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    /* Action Card Item */
+    .action-card {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      color: var(--ink-primary);
+      text-decoration: none;
+      text-align: left;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .action-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.12), transparent);
+      transition: opacity 0.22s ease;
+    }
+    .action-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px -6px rgba(0, 0, 0, 0.6);
+    }
+    .action-card:hover::before {
+      opacity: 1;
+    }
+    .action-card:active {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    /* Card 1: Registration Form */
+    .action-card.register {
+      background: linear-gradient(135deg, rgba(185, 28, 28, 0.45) 0%, rgba(234, 88, 12, 0.28) 100%);
+      border: 1px solid rgba(255, 120, 40, 0.4);
+      box-shadow: 0 4px 18px rgba(185, 28, 28, 0.25);
+    }
+    .action-card.register:hover {
+      border-color: rgba(255, 180, 80, 0.8);
+      box-shadow: 0 14px 32px -6px rgba(234, 88, 12, 0.5), 0 0 20px rgba(255, 106, 0, 0.3);
+    }
+    .action-card.register .card-icon {
+      background: linear-gradient(135deg, #b91c1c, #ea580c);
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.5);
+    }
+
+    /* Card 2: Pamphlet */
+    .action-card.pamphlet {
+      background: linear-gradient(135deg, rgba(234, 88, 12, 0.5) 0%, rgba(251, 146, 60, 0.22) 100%);
+      border: 1px solid rgba(251, 191, 36, 0.48);
+      box-shadow: 0 4px 18px rgba(234, 88, 12, 0.28);
+    }
+    .action-card.pamphlet:hover {
+      border-color: rgba(254, 240, 138, 0.85);
+      box-shadow: 0 14px 32px -6px rgba(251, 191, 36, 0.45), 0 0 22px rgba(255, 150, 0, 0.35);
+    }
+    .action-card.pamphlet .card-icon {
+      background: linear-gradient(135deg, #ea580c, #f59e0b);
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.5);
+    }
+
+    /* Card Icon Container */
+    .card-icon {
+      flex-shrink: 0;
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    .card-icon svg {
+      width: 23px;
+      height: 23px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Card Details */
+    .card-body {
+      flex: 1;
+      min-width: 0;
+    }
+    .card-title {
+      font-size: 16.5px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3px;
+    }
+    .card-desc {
+      font-size: 12.5px;
+      color: #fed7aa;
+      line-height: 1.35;
+    }
+
+    /* Trailing Arrow Badge */
+    .card-arrow {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffedd5;
+      transition: all 0.2s ease;
+    }
+    .action-card:hover .card-arrow {
+      transform: translateX(3px);
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+    .card-arrow svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Destination URL display */
+    .url-tag {
+      font-size: 11px;
+      color: #fdba74;
+      margin-top: 4px;
+      word-break: break-all;
+    }
+
+    /* Hub Footer */
+    .hub-footer {
+      border-top: 1px solid rgba(255, 107, 0, 0.2);
+      padding-top: 18px;
+      font-size: 12px;
+      color: #fed7aa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    }
+    .hub-footer svg {
+      width: 14px;
+      height: 14px;
+      stroke: #fbbf24;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* Fallback/Notification states */
+    .notice {
+      background: rgba(220, 38, 38, 0.2);
+      border: 1px solid rgba(248, 113, 113, 0.4);
+      color: #fecaca;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .spin {
+      display: none;
+    }
+
+    /* Interactive Pamphlet Viewer Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 2, 1, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-dialog {
+      position: relative;
+      width: 100%;
+      max-width: 680px;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      background: #180503;
+      border: 1px solid rgba(255, 107, 0, 0.35);
+      border-radius: 20px;
+      box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.95), 0 0 30px rgba(234, 88, 12, 0.25);
+      overflow: hidden;
+      animation: modalScale 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalScale {
+      from { transform: scale(0.95) translateY(8px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255, 107, 0, 0.2);
+      background: rgba(255, 107, 0, 0.05);
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal-close {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fed7aa;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .tab-bar {
+      display: flex;
+      padding: 8px 12px;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.4);
+      border-bottom: 1px solid rgba(255, 107, 0, 0.15);
+    }
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      border: 1px solid transparent;
+      color: #fed7aa;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(234, 88, 12, 0.35), rgba(185, 28, 28, 0.35));
+      border-color: rgba(251, 191, 36, 0.5);
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(234, 88, 12, 0.3);
+    }
+    .tab-btn:hover:not(.active) {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0d0201;
+      min-height: 280px;
+    }
+    .pamphlet-image {
+      max-width: 100%;
+      max-height: 64vh;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      object-fit: contain;
+      cursor: pointer;
+      display: block;
+      transition: opacity 0.15s ease;
+    }
+    .pamphlet-image:hover {
+      opacity: 0.95;
+    }
+
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+      border-top: 1px solid rgba(255, 107, 0, 0.2);
+      background: rgba(255, 107, 0, 0.05);
+      gap: 10px;
+    }
+    .modal-hint {
+      font-size: 12px;
+      color: #fdba74;
+    }
+    .modal-action-btn {
+      background: linear-gradient(135deg, #ea580c, #b91c1c);
+      border: 1px solid rgba(254, 215, 170, 0.3);
+      color: #fff;
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(234, 88, 12, 0.35);
+      transition: all 0.15s ease;
+    }
+    .modal-action-btn:hover {
+      filter: brightness(1.15);
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 16px 10px;
+      }
+      .hub {
+        padding: 26px 16px 20px;
+      }
+      h1 {
+        font-size: 28px;
+      }
+      .tab-btn {
+        font-size: 12px;
+        padding: 6px 8px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <main class="card">
+
+  <!-- Program Flyer Sampled Backdrop -->
+  <div class="flyer-backdrop" aria-hidden="true"></div>
+
+  <!-- Ambient Dynamic Ember Glows -->
+  <div class="glow-canvas">
+    <div class="glow glow-fire-top"></div>
+    <div class="glow glow-fire-bottom"></div>
+    <div class="glow glow-fire-center"></div>
+  </div>
+
+  <!-- Main Meeting Card -->
+  <main class="hub">
     <div class="spin" aria-hidden="true"></div>
-    <h1 id="title">Meeting Registration</h1>
-    <p id="note">Taking you to the registration form...</p>
-    <a class="btn" id="go" href="#" rel="noopener">Open the form</a>
-    <div class="url" id="url"></div>
+
+    <!-- Header Badges -->
+    <div class="badge-bar">
+      <span class="live-badge">
+        <span class="pulse-dot"></span>
+        <span id="tag-text">NYC'26</span>
+      </span>
+      <span class="org-tag" id="org-text">House to House Prayer Ministries</span>
+    </div>
+
+    <!-- Event Title & Theme -->
+    <h1 id="title">FLAMES OF FIRE</h1>
+    <div class="subtitle" id="subtitle">Hebrews 1:7 — "God Burn in Us and Through Us"</div>
+
+    <!-- Event Date & Venue Chips -->
+    <div class="event-meta" id="event-meta">
+      <span class="meta-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <span id="meta-date">Oct 30 – Nov 1</span>
+      </span>
+      <span class="meta-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        <span id="meta-venue">H/Q, Ogbomoso</span>
+      </span>
+    </div>
+
+    <p class="note" id="note">Welcome! Choose an option below to register or view the meeting program:</p>
+
+    <!-- Error/Notice Display -->
+    <div class="notice" id="notice"></div>
+
+    <!-- Primary Actions -->
+    <div class="action-group">
+      <!-- 1. REGISTRATION FORM -->
+      <a class="action-card register" id="go" href="#" target="_blank" rel="noopener noreferrer">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title" id="go-title">Register for Meeting</div>
+          <div class="card-desc" id="go-desc">Complete the online registration form</div>
+          <div class="url-tag" id="url"></div>
+        </div>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+      </a>
+
+      <!-- 2. MEETING PROGRAM / PAMPHLET -->
+      <a class="action-card pamphlet" id="pamphlet-go" href="#" rel="noopener noreferrer">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title" id="pamphlet-title">View Meeting Program</div>
+          <div class="card-desc" id="pamphlet-desc">Order of service, schedule & ministers</div>
+        </div>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+      </a>
+    </div>
+
+    <!-- Hub Footer -->
+    <footer class="hub-footer">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      <span>Official Event Portal • Always Up to Date</span>
+    </footer>
   </main>
+
+  <!-- Interactive Program Pamphlet Viewer Modal -->
+  <div class="modal-overlay" id="pamphlet-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          <span id="modal-heading">Meeting Program Pamphlet</span>
+        </div>
+        <button class="modal-close" id="modal-close-btn" aria-label="Close dialog">✕</button>
+      </div>
+
+      <div class="tab-bar" id="tab-bar">
+        <button class="tab-btn active" id="tab-0">Cover, Ministers & Hymn</button>
+        <button class="tab-btn" id="tab-1">Order of Programme</button>
+      </div>
+
+      <div class="modal-body">
+        <img class="pamphlet-image" id="modal-img" src="" alt="Meeting Program Pamphlet">
+      </div>
+
+      <div class="modal-footer">
+        <span class="modal-hint">Tap image or button to view full size</span>
+        <a class="modal-action-btn" id="modal-fullsize-btn" href="#" target="_self">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          <span>Open Full Image</span>
+        </a>
+      </div>
+    </div>
+  </div>
 
   <script src="config.js"></script>
   <script>
     (function () {
       var cfg = window.MEETING || {};
-      var url = (cfg.formUrl || "").trim();
+      var formUrl = (cfg.formUrl || "").trim();
+      var pamphletUrl = (cfg.pamphletUrl || "").trim();
+      var pamphletPages = cfg.pamphletPages || [
+        { title: "Cover, Ministers & Hymn", file: "program-cover.jpg" },
+        { title: "Order of Programme", file: "program-schedule.png" }
+      ];
 
-      document.title = cfg.title || document.title;
-      document.getElementById("title").textContent = cfg.title || "Meeting Registration";
-      document.getElementById("note").textContent = cfg.note || "Taking you to the registration form...";
-      document.getElementById("go").textContent = cfg.buttonText || "Open the form";
+      // 1. Text & Headings
+      document.title = cfg.title || "Meeting Registration";
+      var titleEl = document.getElementById("title");
+      if (titleEl) titleEl.textContent = cfg.title || "Meeting Registration";
 
-      if (!url || url.indexOf("PASTE-YOUR-FORM-ID") !== -1) {
-        document.getElementById("note").textContent =
-          "No form link has been set yet. Edit config.js to add one.";
-        document.querySelector(".spin").style.display = "none";
-        return;
+      var subtitleEl = document.getElementById("subtitle");
+      if (subtitleEl) {
+        if (cfg.subtitle) {
+          subtitleEl.textContent = cfg.subtitle;
+          subtitleEl.style.display = "block";
+        } else {
+          subtitleEl.style.display = "none";
+        }
       }
 
-      document.getElementById("go").href = url;
-      try { document.getElementById("url").textContent = new URL(url).hostname; } catch (e) {}
+      var noteEl = document.getElementById("note");
+      if (noteEl && cfg.note) noteEl.textContent = cfg.note;
 
-      // Auto-forward shortly after paint so visitors can still tap the button.
-      setTimeout(function () { window.location.replace(url); }, 1200);
+      var tagEl = document.getElementById("tag-text");
+      if (tagEl && cfg.tag) tagEl.textContent = cfg.tag;
+
+      var orgEl = document.getElementById("org-text");
+      if (orgEl && cfg.organization) orgEl.textContent = cfg.organization;
+
+      var metaDate = document.getElementById("meta-date");
+      if (metaDate && cfg.dates) metaDate.textContent = cfg.dates;
+
+      var metaVenue = document.getElementById("meta-venue");
+      if (metaVenue && cfg.venue) metaVenue.textContent = cfg.venue;
+
+      // 2. Registration Form Card
+      var goBtn = document.getElementById("go");
+      var goTitle = document.getElementById("go-title");
+      var goDesc = document.getElementById("go-desc");
+      var urlTag = document.getElementById("url");
+
+      if (goTitle && (cfg.buttonText || cfg.formButtonText)) {
+        goTitle.textContent = cfg.buttonText || cfg.formButtonText;
+      }
+      if (goDesc && cfg.formDescription) {
+        goDesc.textContent = cfg.formDescription;
+      }
+
+      var hasForm = formUrl && formUrl.indexOf("PASTE-YOUR-FORM-ID") === -1;
+      if (hasForm) {
+        goBtn.href = formUrl;
+        try {
+          urlTag.textContent = new URL(formUrl).hostname;
+        } catch (e) {
+          urlTag.textContent = "";
+        }
+      } else {
+        goBtn.style.opacity = "0.5";
+        goBtn.onclick = function (e) {
+          e.preventDefault();
+          alert("Registration link has not been set yet in config.js.");
+        };
+      }
+
+      // 3. Meeting Program Pamphlet Card & Modal
+      var pBtn = document.getElementById("pamphlet-go");
+      var pTitle = document.getElementById("pamphlet-title");
+      var pDesc = document.getElementById("pamphlet-desc");
+      var modal = document.getElementById("pamphlet-modal");
+      var modalImg = document.getElementById("modal-img");
+      var modalFullsize = document.getElementById("modal-fullsize-btn");
+      var modalClose = document.getElementById("modal-close-btn");
+      var tabBar = document.getElementById("tab-bar");
+
+      if (pTitle && cfg.pamphletButtonText) pTitle.textContent = cfg.pamphletButtonText;
+      if (pDesc && cfg.pamphletDescription) pDesc.textContent = cfg.pamphletDescription;
+
+      function renderTab(index) {
+        activeIndex = index;
+        var page = pamphletPages[index] || { file: pamphletUrl };
+        modalImg.src = page.file;
+        if (modalFullsize) {
+          modalFullsize.href = page.file;
+          modalFullsize.target = "_self";
+        }
+        var tabs = tabBar.querySelectorAll(".tab-btn");
+        tabs.forEach(function (btn, i) {
+          if (i === index) btn.classList.add("active");
+          else btn.classList.remove("active");
+        });
+      }
+
+      if (pamphletPages && pamphletPages.length > 1) {
+        tabBar.innerHTML = "";
+        pamphletPages.forEach(function (page, idx) {
+          var btn = document.createElement("button");
+          btn.className = "tab-btn" + (idx === 0 ? " active" : "");
+          btn.textContent = page.title || ("Page " + (idx + 1));
+          btn.onclick = function () {
+            renderTab(idx);
+          };
+          tabBar.appendChild(btn);
+        });
+      } else {
+        tabBar.style.display = "none";
+      }
+
+      var defaultUrl = (pamphletPages && pamphletPages[0] && pamphletPages[0].file) || pamphletUrl;
+      if (defaultUrl) {
+        pBtn.href = defaultUrl;
+        pBtn.onclick = function (e) {
+          e.preventDefault();
+          renderTab(0);
+          modal.classList.add("active");
+        };
+      } else {
+        pBtn.style.display = "none";
+      }
+
+      function openInSameTab(e) {
+        if (e) e.preventDefault();
+        var curPage = pamphletPages[activeIndex] || { file: pamphletUrl };
+        window.location.href = curPage.file;
+      }
+
+      if (modalFullsize) {
+        modalFullsize.onclick = openInSameTab;
+      }
+
+      if (modalImg) {
+        modalImg.onclick = openInSameTab;
+      }
+
+      function closeModal() {
+        if (modal) modal.classList.remove("active");
+      }
+      if (modalClose) modalClose.onclick = closeModal;
+      if (modal) {
+        modal.onclick = function (e) {
+          if (e.target === modal) closeModal();
+        };
+      }
+      window.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") closeModal();
+      });
     })();
   </script>
 </body>

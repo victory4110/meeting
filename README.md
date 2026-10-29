@@ -15,15 +15,11 @@ Live page: **https://victory4110.github.io/meeting/**
 ## For every new meeting (30 seconds)
 
 1. Open `config.js` in this repo and click the pencil (edit) icon.
-2. Replace the link inside `formUrl` with the new Google Form link. Commit.
+2. Replace `formUrl` with the new Google Form link.
+3. Replace the pamphlet picture file (`program-schedule.png`, `program-cover.jpg`) or set `pamphletUrl` in `config.js`.
+4. Update `title`, `dates`, or `venue` if needed. Commit.
 
-   ```js
-   formUrl: "https://forms.gle/xxxxxxxxxxx",
-   ```
-
-3. Optionally update `title` so the page names the right meeting.
-
-That is it. **The printed QR still works.**
+That is it. **The printed QR code keeps working.**
 
 ## Where the QR is
 
@@ -39,8 +35,10 @@ Download these from GitHub on any device, including your phone.
 
 | File | Purpose |
 | --- | --- |
-| `config.js` | **The only file you edit.** Holds the Google Form link. |
-| `index.html` | The page the QR opens. Forwards to the form. Do not edit. |
+| `config.js` | **The main file you edit.** Holds the Google Form link, pamphlet files, and event info. |
+| `index.html` | The mobile portal page opened by the QR code. Presents options to register or view the program. |
+| `program-schedule.png` | Inside spread with the Day 1–3 schedule and welcome address. |
+| `program-cover.jpg` | Outer spread with the ministers, theme flyer, and fellowship hymn. |
 | `out/` | The QR images and the printable poster. |
 | `make-qr.mjs` | Rebuilds the QR images. `npm run qr` |
 | `verify-qr.mjs` | Decodes the QR images and proves they point where they should. `npm run verify` |
@@ -49,9 +47,9 @@ Download these from GitHub on any device, including your phone.
 
 ## How the page behaves
 
-Someone scans the QR. They see the FLAMES OF FIRE card with a spinner for about
-a second, then land on the Google Form automatically. If the redirect is blocked,
-there is a large button they can tap instead. Either way they reach the form.
+When someone scans the QR code on the flyer or poster, they land on the **NYC'26 FLAMES OF FIRE Meeting Portal** and are presented with two options:
+1. **Register for Meeting**: Tapping opens the online Google Form.
+2. **View Meeting Program**: Tapping opens an interactive full-screen viewer with tabs to read both the **Order of Programme** (Day 1–3 schedule) and the **Cover, Ministers & Hymn**. Visitors can also open or download the full-resolution images.
 
 ## Rebuilding the QR
 
